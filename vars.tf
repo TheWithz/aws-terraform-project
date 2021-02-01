@@ -32,7 +32,7 @@ variable "WEB_SCRIPT" {
     "sudo apt install nginx -y",
     "sudo systemctl start nginx",
     "sudo systemctl enable nginx",
-    "cat << EOF > ~/index.html\nHello, World!\nEOF",
+    "cat << EOF > ~/index.html\n$(ip address show)\nEOF",
     "sudo mv ~/index.html /var/www/html/"
   ]
 }
