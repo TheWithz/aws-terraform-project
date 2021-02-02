@@ -53,7 +53,8 @@ resource "aws_security_group" "ssh-allowed" {
   }
 }
 
-resource "aws_instance" "web1" {
+resource "aws_instance" "web" {
+  count         = 3
   ami           = var.AMI
   instance_type = "t2.micro"
   # VPC
@@ -71,26 +72,10 @@ resource "aws_instance" "web1" {
     private_key = file(var.PRIVATE_KEY_PATH)
     host        = self.public_ip
   }
-}
+  tags = {
+    Name = "Web${count.index}"
+  }
 
-resource "aws_instance" "web2" {
-  ami           = var.AMI
-  instance_type = "t2.micro"
-  # VPC
-  subnet_id = aws_subnet.prod-subnet-public-1.id
-  # Security Group
-  vpc_security_group_ids = [aws_security_group.ssh-allowed.id]
-  # the Public SSH key
-  key_name = aws_key_pair.aws-key-pair.id
-  # nginx installation
-  provisioner "remote-exec" {
-    inline = var.WEB_SCRIPT
-  }
-  connection {
-    user        = var.EC2_USER
-    private_key = file(var.PRIVATE_KEY_PATH)
-    host        = self.public_ip
-  }
 }
 
 // Sends your public key to the instance
